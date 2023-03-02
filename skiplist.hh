@@ -5,11 +5,14 @@
 
 #define SKIPLIST_MAX_LEVEL 6
 
+#define NODE_MAX_LEVEL 6
+
 template <typename K, typename V>
 struct snode
 {
     int key;
     int value;
+    //snode* backward[NODE_MAX_LEVEL];
     snode* forward[SKIPLIST_MAX_LEVEL + 1];
 };
 
@@ -66,7 +69,7 @@ struct skiplist
     }
 
 
-    void emplace(K key, V value)
+    snode<K, V>* emplace(K key, V value)
     {
         snode<K, V>* update[SKIPLIST_MAX_LEVEL + 1];
         snode<K, V>* x = this->hdr;
@@ -103,10 +106,13 @@ struct skiplist
             x->forward[i] = update[i]->forward[i];
             update[i]->forward[i] = x;
         }
+
+        return x;
     }
 
     snode<K, V>* skiplist_search(K& key)
     {
+        /* search is confusing because we have multiple values
         snode<K, V>* x = this->hdr;
         for (int i = this->max_level; i >= 1; i--) {
             while (x->forward[i]->key < key)
@@ -116,18 +122,30 @@ struct skiplist
         if (x->forward[1]->key == key)
             return x->forward[1];
 
-        return NULL;
+        return NULL;*/
     }
 
+    // first go from the 
     snode<K, V>* skiplist_move(K& key, snode<K, V>* x)
     {
+        snode<K, V>* update[SKIPLIST_MAX_LEVEL + 1];
+        
+        // sync up backward with next
+        for (int i = this->max_level; i >= 1; i--) {
+            if (x->backward[i]) {
+                x->backward[i]->forward[i] = x->forward[i];
+            }
+        }
+
+        // find the position for the next key
         for (int i = this->max_level; i >= 1; i--) {
             if (x->forward[i]) {
                 while (x->forward[i]->key < key)
                     x = x->forward[i];
             }
         }
-        
+
+        // 
         if (x->forward[1]->key == key) {
             // that means we 
             return x->forward[1];
