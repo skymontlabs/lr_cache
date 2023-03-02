@@ -1,0 +1,51 @@
+PURE GDSF
+
+time elapsed: 39:28.851000
+hit rate: 0.629576
+time elapsed: 40:23.410000
+hit rate: 0.433835
+
+
+LEARNED
+
+{
+    if (lru4[0] != -1) return (lru4[0]);
+    else if (lru4[1] != -1) return (lru4[1]) * 0.8;
+    else if (lru4[2] != -1) return (lru4[2]) * 0.55;
+    else if (lru4[3] != -1) return (lru4[3]) * 0.21;
+    
+    return 1;
+}
+
+double s =
+vars[0] + \
+vars[1] * double(obj.hits) + \
+vars[2] * (obj.lru_data() / double(timestamp_)) + \
+vars[3] * (double(obj.hitct[1]) / double(obj.hits)) + \
+vars[4] * (double(obj.hitct[1] + obj.hitct[0]) / double(obj.hits));
+
+-0.065785 0.000001 -0.376978 0.563826 0.054476
+hit rate: 0.629378
+-0.030925 0.000000 -0.258062 0.682675 0.063775
+hit rate: 0.445822
+
+
+with log hits as variable for v[1]
+
+time elapsed: 105:45.246000
+0.066530 0.050372 0.426932 0.189070 0.025552
+hit rate: 0.430398
+time elapsed: 115:1.121000
+0.115054 0.088307 1.007654 0.379484 0.028056
+hit rate: 0.610157
+
+using sqrt hits for v[1]
+
+
+time elapsed: 93:22.823000
+-0.009280 0.005072 -0.065779 0.268707 0.023126
+hit rate: 0.625931
+time elapsed: 96:41.163000
+-0.021670 0.004652 -0.071969 0.398173 0.051586
+hit rate: 0.433200
+
