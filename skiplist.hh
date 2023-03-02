@@ -10,8 +10,8 @@
 template <typename K, typename V>
 struct snode
 {
-    int key;
-    int value;
+    K key;
+    V value;
     //snode* backward[NODE_MAX_LEVEL];
     snode* forward[SKIPLIST_MAX_LEVEL + 1];
 };
@@ -37,7 +37,8 @@ template <typename K, typename V>
 struct skiplist
 {
     int max_level;
-    snode<K, V> *hdr;
+    snode<K, V>* hdr;
+    snode<K, V>* unused;
     vector<snode<K, V>> allocator_;
 
     skiplist():
@@ -66,6 +67,17 @@ struct skiplist
         //free(current_node->forward);
         free(current_node);
         free(list);*/
+    }
+
+    inline snode<K, V>* alloc_node()
+    {
+        if (unused) {
+            auto ret = unused;
+            unused = unused->forward[0];
+            return ret;
+        }
+
+        return allocator_.alloc_back();
     }
 
 
@@ -126,7 +138,7 @@ struct skiplist
     }
 
     // first go from the 
-    snode<K, V>* skiplist_move(K& key, snode<K, V>* x)
+    snode<K, V>* move(K& key, snode<K, V>* x)
     {
         snode<K, V>* update[SKIPLIST_MAX_LEVEL + 1];
         
@@ -152,6 +164,22 @@ struct skiplist
         }
 
         return NULL;
+    }
+
+
+    void skiplist_remove(snode<K, V>* x)
+    {
+        snode<K, V>* update[SKIPLIST_MAX_LEVEL + 1];
+        
+        // sync up backward with next
+        for (int i = this->max_level; i >= 1; i--) {
+            if (x->backward[i]) {
+                x->backward[i]->forward[i] = x->forward[i];
+            }
+        }
+
+        x->forward[0] = unused;
+        unused = x;
     }
 
 

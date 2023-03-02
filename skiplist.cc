@@ -13,7 +13,7 @@ int main()
 
     printf("%d %d\n",nodes[0]->key,nodes[0]->value);
     
-    snode<K, V>* nod = skiplist_move(13, nodes[0]);
+    snode<int, int>* nod = list.move(13, nodes[0]);
 
     list.dump();
 
